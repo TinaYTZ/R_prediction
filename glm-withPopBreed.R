@@ -1,3 +1,9 @@
+# Animal Outcomes dataset on Kaggle #
+# title: Animal outcomes by logistic regression
+# author: Yuting Zhang
+# date: 8 May 2016
+
+
 library(dplyr) # data manipulation
 library(lubridate) # dates
 library("ISLR")
