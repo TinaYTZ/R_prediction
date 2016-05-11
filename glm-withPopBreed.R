@@ -7,6 +7,7 @@
 library(dplyr) # data manipulation
 library(lubridate) # dates
 library("ISLR")
+library(plyr) # data manipulation
 
 
 #load the outcome.train set
@@ -15,10 +16,11 @@ outcome.train <- read.csv('/Users/Tina/Documents/R_Studio/GroupP/train.csv', hea
 #load the test set
 outcome.test <- read.csv('/Users/Tina/Documents/R_Studio/GroupP/test.csv', header = T, stringsAsFactors = F)
 
+
 pop=count(outcome.train$Breed)
 pop=pop[order(-pop[2]) , ]
-popularBreeds=pop$x[1:10]
-popularBreeds=head(pop$x, 10)
+popularBreeds=pop$x[1:20]
+popularBreeds=head(pop$x, 20)
 
 
 for (i in 1: length(outcome.train$Breed)) {
@@ -31,7 +33,18 @@ outcome.train$Breed[i]<- if(  outcome.train$Breed[i]  != popularBreeds[1]&&
                                outcome.train$Breed[i] != popularBreeds[7]&&
                                outcome.train$Breed[i] != popularBreeds[8]&&
                                outcome.train$Breed[i] != popularBreeds[9]&&
-                               outcome.train$Breed[i] != popularBreeds[10]) 'others' else outcome.train$Breed[i]
+                               outcome.train$Breed[i] != popularBreeds[10]&&
+                              outcome.train$Breed[i]  != popularBreeds[11]&&
+                              outcome.train$Breed[i] != popularBreeds[12]&&
+                              outcome.train$Breed[i] != popularBreeds[13]&&
+                              outcome.train$Breed[i] != popularBreeds[14]&&
+                              outcome.train$Breed[i] != popularBreeds[15]&&
+                              outcome.train$Breed[i] != popularBreeds[16]&&
+                              outcome.train$Breed[i] != popularBreeds[17]&&
+                              outcome.train$Breed[i] != popularBreeds[18]&&
+                              outcome.train$Breed[i] != popularBreeds[19]&&
+                              outcome.train$Breed[i] != popularBreeds[20]
+                              ) 'others' else outcome.train$Breed[i]
 }
 
 
@@ -45,7 +58,18 @@ for (i in 1: length(outcome.test$Breed)) {
                                 outcome.test$Breed[i] != popularBreeds[7]&&
                                 outcome.test$Breed[i] != popularBreeds[8]&&
                                 outcome.test$Breed[i] != popularBreeds[9]&&
-                                outcome.test$Breed[i] != popularBreeds[10]) 'others' else outcome.test$Breed[i]
+                                outcome.test$Breed[i] != popularBreeds[10]&&
+                               outcome.test$Breed[i]  != popularBreeds[11]&&
+                               outcome.test$Breed[i] != popularBreeds[12]&&
+                               outcome.test$Breed[i] != popularBreeds[13]&&
+                               outcome.test$Breed[i] != popularBreeds[14]&&
+                               outcome.test$Breed[i] != popularBreeds[15]&&
+                               outcome.test$Breed[i] != popularBreeds[16]&&
+                               outcome.test$Breed[i] != popularBreeds[17]&&
+                               outcome.test$Breed[i] != popularBreeds[18]&&
+                               outcome.test$Breed[i] != popularBreeds[19]&&
+                               outcome.test$Breed[i] != popularBreeds[20]
+                               ) 'others' else outcome.test$Breed[i]
 }
 attach(outcome.train)
 
@@ -107,7 +131,7 @@ outcome.train$cat =ifelse (outcome.train$AnimalType=='Cat', 1, ifelse(outcome.tr
 names(outcome.test)[1] <- 'ID'
 
 # Clean the data set
-outcome.test$Name = ifelse(nchar(outcome.outcome.test$Name)==0, 'Nameless', outcome.outcome.test$Name)
+outcome.test$Name = ifelse(nchar(outcome.test$Name)==0, 'Nameless', outcome.test$Name)
 outcome.test$AgeuponOutcome = ifelse(nchar(outcome.test$AgeuponOutcome)==0, '0 year', outcome.test$AgeuponOutcome)
 
 # create another column which indicates if an animal has a name or not, represented by either 0 or 1 and add to the data frame
@@ -153,8 +177,8 @@ outcome.test$AgeinDays = multiplier * outcome.test$TimeValue
 barplot(table(outcome.test$SexuponOutcome))
 outcome.test$SexuponOutcome = ifelse(nchar(outcome.test$SexuponOutcome) == 0, "Neutered Male", outcome.test$SexuponOutcome)
 # split animal type
-outcome.test$dog =ifelse (outcome.test$AnimalType=='Dog', 1, ifelse(outcome.test$AnimalType!='Dog', 0,NA) )
-outcome.test$cat =ifelse (outcome.test$AnimalType=='Cat', 1, ifelse(outcome.test$AnimalType!='Cat', 0,NA) )
+outcome.test$dog =ifelse (outcome.test$AnimalType=='Dog', 1,0 )
+outcome.test$cat =ifelse (outcome.test$AnimalType=='Cat', 1, 0 )
 
 
 
@@ -188,11 +212,11 @@ outcome.train$resultR =ifelse (outcome.train$OutcomeType=='Return_to_owner', TRU
 attach(outcome.train)
 #fit a logistic regression model using outcome.training data
 #SexuponOutcome
-glm.fitA=glm(resultA~hasName+dog+cat+AgeinDays+Year+Weekday+Hour+TimeValue+SexuponOutcome+Breed, data = outcome.train, family = binomial )
+glm_fitA=glm(resultA~hasName+dog+AgeinDays+Year+Weekday+Hour+TimeValue+SexuponOutcome+Breed, data = outcome.train, family = binomial )
 
 
 # use fitted model to do prediction for the testing data
-model_pred=predict((glm.fitA), outcome.test, ,type ="response")
+model_pred=predict(glm_fitA, outcome.test,type ="response")
 outcome.test$predictionA=rep(0, length(outcome.test$ID))
 outcome.test$predictionA=model_pred
 #outcome.test$resultA =ifelse (outcome.test$OutcomeType=='Adoption', 1, ifelse(outcome.test$AnimalType!='Adoption', 0,NA) )
@@ -200,7 +224,7 @@ outcome.test$predictionA=model_pred
 
 
 #fit a logistic regression model using outcome.training data
-glm_fitD=glm(resultD~hasName+dog+cat+AgeinDays+Year+Weekday+Hour+TimeValue+SexuponOutcome+Breed, data = outcome.train, family = binomial )
+glm_fitD=glm(resultD~hasName+dog+cat+AgeinDays+TimeValue+Year+Weekday+Hour+SexuponOutcome+Breed, data = outcome.train, family = binomial )
 #outcome.test$resultD =ifelse (outcome.test$OutcomeType=='Adoption', TRUE, ifelse(outcome.test$AnimalType!='Adoption', FALSE,NA) )
 
 
@@ -220,7 +244,7 @@ outcome.test$predictionE=rep(0, length(outcome.test$ID))
 outcome.test$predictionE=model_pred
 
 #fit a logistic regression model using outcome.training data
-glm_fitR=glm(resultR~hasName+dog+cat+AgeinDays+Year+Weekday+Hour+TimeValue+SexuponOutcome+Breed, data = outcome.train, family = binomial )
+glm_fitR=glm(resultR~hasName+dog+cat+AgeinDays+TimeValue+Year+Weekday+Hour+SexuponOutcome+Breed, data = outcome.train, family = binomial )
 
 
 # use fitted model to do prediction for the outcome.testing data
